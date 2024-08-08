@@ -1,30 +1,31 @@
+// app/root.tsx or app/routes/index.tsx
 import {
   Links,
+  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import "./tailwind.css";
+import "./game.css";
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function links() {
+  return [{ rel: "stylesheet", href: "/game.css" }];
+}
+
+export default function App() {
   return (
     <html lang="en">
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
       <body>
-        {children}
+        <Outlet />
         <ScrollRestoration />
         <Scripts />
+        <LiveReload />
       </body>
     </html>
   );
-}
-
-export default function App() {
-  return <Outlet />;
 }
