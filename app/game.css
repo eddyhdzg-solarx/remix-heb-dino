@@ -1,4 +1,20 @@
 /* app/styles/game.css */
+
+/* Prevent scrolling outside of the viewport */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .game {
   position: relative;
   width: 100%;
@@ -26,16 +42,7 @@
   width: 20px;
   height: 50px;
   background-color: red;
-  animation: moveObstacle 2s linear infinite;
-}
-
-@keyframes moveObstacle {
-  from {
-    right: -20px;
-  }
-  to {
-    right: 100%;
-  }
+  transition: left 0.02s linear;
 }
 
 .score {
@@ -45,6 +52,15 @@
   font-size: 24px;
 }
 
-.paused {
+.game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  color: red;
+}
+
+.paused .obstacle {
   animation-play-state: paused;
 }

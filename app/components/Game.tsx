@@ -1,11 +1,12 @@
-// app/routes/game.tsx
 import React, { useState, useEffect, useRef } from "react";
 import { Dino } from "~/components/Dino";
 import { Obstacle } from "~/components/Obstacle";
 
 export const Game: React.FC = () => {
   const [jump, setJump] = useState(false);
-  const [obstacles, setObstacles] = useState<number[]>([]);
+  const [obstacles, setObstacles] = useState<{ id: number; left: number }[]>(
+    []
+  );
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const gameRef = useRef<HTMLDivElement>(null);
@@ -26,8 +27,7 @@ export const Game: React.FC = () => {
     if (gameOver) return;
 
     const interval = setInterval(() => {
-      setObstacles((prev) => [...prev, Date.now()]);
-      setScore((prev) => prev + 1);
+      setObstacles((prev) => [...prev, { id: Date.now(), left: 100 }]);
     }, 2000);
 
     return () => clearInterval(interval);
@@ -38,36 +38,56 @@ export const Game: React.FC = () => {
 
     const checkCollision = () => {
       const dino = gameRef.current?.querySelector(".dino");
-      const obstacle = gameRef.current?.querySelector(".obstacle");
-
-      if (!dino || !obstacle) return;
+      if (!dino) return;
 
       const dinoRect = dino.getBoundingClientRect();
-      const obstacleRect = obstacle.getBoundingClientRect();
 
-      if (
-        dinoRect.right > obstacleRect.left &&
-        dinoRect.left < obstacleRect.right &&
-        dinoRect.bottom > obstacleRect.top
-      ) {
-        setGameOver(true);
-      }
+      obstacles.forEach((obstacle) => {
+        const obstacleElement = gameRef.current?.querySelector(
+          `#obstacle-${obstacle.id}`
+        );
+        if (!obstacleElement) return;
+
+        const obstacleRect = obstacleElement.getBoundingClientRect();
+
+        if (
+          dinoRect.right > obstacleRect.left &&
+          dinoRect.left < obstacleRect.right &&
+          dinoRect.bottom > obstacleRect.top
+        ) {
+          setGameOver(true);
+        } else if (obstacle.left < 0) {
+          // Increment score only when the obstacle goes out of view
+          setObstacles((prev) => prev.filter((o) => o.id !== obstacle.id));
+          setScore((prev) => prev + 1);
+        }
+      });
     };
 
     const gameLoop = setInterval(() => {
       if (!gameOver) {
+        setObstacles((prev) =>
+          prev.map((obstacle) => ({
+            ...obstacle,
+            left: obstacle.left - 1,
+          }))
+        );
         checkCollision();
       }
-    }, 100);
+    }, 20);
 
     return () => clearInterval(gameLoop);
-  }, [gameOver]);
+  }, [obstacles, gameOver]);
 
   return (
     <div className={`game ${gameOver ? "paused" : ""}`} ref={gameRef}>
       <Dino jump={jump} />
-      {obstacles.map((id) => (
-        <Obstacle key={id} />
+      {obstacles.map((obstacle) => (
+        <Obstacle
+          key={obstacle.id}
+          id={`obstacle-${obstacle.id}`}
+          left={obstacle.left}
+        />
       ))}
       <div className="score">Score: {score}</div>
       {gameOver && <div className="game-over">Game Over</div>}
