@@ -52,6 +52,13 @@ body {
   font-size: 24px;
 }
 
+.leaderboard {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 16px;
+}
+
 .game-over {
   position: absolute;
   top: 50%;
