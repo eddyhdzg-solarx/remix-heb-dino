@@ -1,3 +1,5 @@
+// app/consts/animals.ts
+
 export const animals = [
   "Anonymous Alligator",
   "Anonymous Anteater",

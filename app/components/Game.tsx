@@ -80,7 +80,7 @@ export const Game: React.FC = () => {
     }, 20);
 
     return () => clearInterval(gameLoop);
-  }, [obstacles, gameOver]);
+  }, [obstacles, gameOver, score]);
 
   const updateLeaderboard = async (score: number) => {
     const user = "Player1"; // Replace with actual user data
